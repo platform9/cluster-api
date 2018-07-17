@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	_ "github.com/platform9/azure-provider"
 	_ "sigs.k8s.io/cluster-api/cloud/google"
 	_ "sigs.k8s.io/cluster-api/cloud/vsphere"
 	"sigs.k8s.io/cluster-api/clusterctl/cmd"

@@ -14,15 +14,29 @@
   version = "v0.20.0"
 
 [[projects]]
+  name = "github.com/Azure/azure-sdk-for-go"
+  packages = [
+    "profiles/latest/network/mgmt/network",
+    "services/network/mgmt/2018-01-01/network",
+    "services/resources/mgmt/2018-02-01/resources",
+    "version"
+  ]
+  revision = "7971189ecf5a584b9211f2527737f94bb979644e"
+  version = "v17.4.0"
+
+[[projects]]
   name = "github.com/Azure/go-autorest"
   packages = [
     "autorest",
     "autorest/adal",
     "autorest/azure",
-    "autorest/date"
+    "autorest/azure/auth",
+    "autorest/date",
+    "autorest/to",
+    "autorest/validation"
   ]
-  revision = "fc3b03a2d2d1f43fad3007038bd16f044f870722"
-  version = "v9.10.0"
+  revision = "894522ed0d5cab8d143c39116ddc5f605a1931ee"
+  version = "v10.13.0"
 
 [[projects]]
   name = "github.com/NYTimes/gziphandler"
@@ -96,6 +110,12 @@
   packages = ["."]
   revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
   version = "v3.2.0"
+
+[[projects]]
+  name = "github.com/dimchansky/utfbom"
+  packages = ["."]
+  revision = "5448fe645cb1964ba70ac8f9f2ffe975e61a536c"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -410,6 +430,17 @@
   version = "v0.8.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/platform9/azure-provider"
+  packages = [
+    ".",
+    "azureproviderconfig",
+    "azureproviderconfig/v1alpha1",
+    "machinesetup"
+  ]
+  revision = "1c9e6292e5b1cc2533d7ab2ab582ab8f73fea7b5"
+
+[[projects]]
   name = "github.com/prometheus/client_golang"
   packages = ["prometheus"]
   revision = "c5b7fccd204277076155f10851dad72b76a49317"
@@ -463,7 +494,11 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
+  packages = [
+    "pkcs12",
+    "pkcs12/internal/rc2",
+    "ssh/terminal"
+  ]
   revision = "88942b9c40a4c9d203b82b3731787b672d6e809b"
 
 [[projects]]
@@ -1024,9 +1059,73 @@
   ]
   revision = "50ae88d24ede7b8bad68e23c805b5d3da5c8abaf"
 
+[[projects]]
+  branch = "master"
+  name = "sigs.k8s.io/cluster-api"
+  packages = [
+    "cloud/google",
+    "cloud/google/clients",
+    "cloud/google/clients/errors",
+    "cloud/google/cmd/gce-controller/cluster-controller-app",
+    "cloud/google/cmd/gce-controller/cluster-controller-app/options",
+    "cloud/google/cmd/gce-controller/machine-controller-app",
+    "cloud/google/cmd/gce-controller/machine-controller-app/options",
+    "cloud/google/config",
+    "cloud/google/gceproviderconfig",
+    "cloud/google/gceproviderconfig/v1alpha1",
+    "cloud/google/machinesetup",
+    "cloud/vsphere",
+    "cloud/vsphere/namedmachines",
+    "cloud/vsphere/vsphereproviderconfig",
+    "cloud/vsphere/vsphereproviderconfig/v1alpha1",
+    "clusterctl/clusterdeployer",
+    "clusterctl/clusterdeployer/minikube",
+    "clusterctl/cmd",
+    "clusterctl/providercomponents",
+    "gcp-deployer/cmd",
+    "gcp-deployer/deploy",
+    "pkg/apis",
+    "pkg/apis/cluster",
+    "pkg/apis/cluster/common",
+    "pkg/apis/cluster/v1alpha1",
+    "pkg/apis/cluster/v1alpha1/testutil",
+    "pkg/cert",
+    "pkg/client/clientset_generated/clientset",
+    "pkg/client/clientset_generated/clientset/fake",
+    "pkg/client/clientset_generated/clientset/scheme",
+    "pkg/client/clientset_generated/clientset/typed/cluster/v1alpha1",
+    "pkg/client/clientset_generated/clientset/typed/cluster/v1alpha1/fake",
+    "pkg/client/informers_generated/externalversions",
+    "pkg/client/informers_generated/externalversions/cluster",
+    "pkg/client/informers_generated/externalversions/cluster/v1alpha1",
+    "pkg/client/informers_generated/externalversions/internalinterfaces",
+    "pkg/client/listers_generated/cluster/v1alpha1",
+    "pkg/clientcmd",
+    "pkg/cmd-runner",
+    "pkg/controller",
+    "pkg/controller/cluster",
+    "pkg/controller/config",
+    "pkg/controller/machine",
+    "pkg/controller/machinedeployment",
+    "pkg/controller/machinedeployment/util",
+    "pkg/controller/machineset",
+    "pkg/controller/noderefutil",
+    "pkg/controller/sharedinformers",
+    "pkg/errors",
+    "pkg/kubeadm",
+    "pkg/openapi",
+    "pkg/test-cmd-runner",
+    "pkg/util",
+    "tools/repair/cmd",
+    "tools/repair/util",
+    "tools/upgrader/cmd",
+    "tools/upgrader/util"
+  ]
+  revision = "012aa2d0bafe135676ba931b61f32cbbe571d1c7"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "40cbed3bd870f59d6c28ecaaa706e5aab9d974a8b52a410e89442a1e522962c6"
+  inputs-digest = "748721e5bc55a18c3f1820bdeb31aed0f980d64c93df8bce3eecf31a8b1b0988"
   solver-name = "gps-cdcl"
   solver-version = 1
