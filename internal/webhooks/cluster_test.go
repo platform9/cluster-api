@@ -1358,6 +1358,49 @@ func TestClusterDefaultAndValidateVariables(t *testing.T) {
 	}
 }
 
+func TestClusterDefaultAndValidateVariables_OldClusterWithoutTopology(t *testing.T) {
+	// Regression test: adding topology to an existing cluster without topology should not panic.
+	utilfeature.SetFeatureGateDuringTest(t, feature.Gates, feature.ClusterTopology, true)
+
+	g := NewWithT(t)
+
+	clusterClass := builder.ClusterClass(metav1.NamespaceDefault, "class1").
+		WithStatusVariables(clusterv1.ClusterClassStatusVariable{
+			Name: "location",
+			Definitions: []clusterv1.ClusterClassStatusVariableDefinition{
+				{
+					Required: true,
+					From:     clusterv1.VariableDefinitionFromInline,
+					Schema: clusterv1.VariableSchema{
+						OpenAPIV3Schema: clusterv1.JSONSchemaProps{
+							Type:    "string",
+							Default: &apiextensionsv1.JSON{Raw: []byte(`"us-east"`)},
+						},
+					},
+				},
+			},
+		}).
+		Build()
+	conditions.MarkTrue(clusterClass, clusterv1.ClusterClassVariablesReconciledCondition)
+
+	// Old cluster exists but has NO topology (Spec.Topology == nil).
+	oldCluster := builder.Cluster(metav1.NamespaceDefault, "cluster1").Build()
+	g.Expect(oldCluster.Spec.Topology).To(BeNil())
+
+	// New cluster adds topology.
+	newCluster := builder.Cluster(metav1.NamespaceDefault, "cluster1").
+		WithTopology(builder.ClusterTopology().
+			WithClass("class1").
+			WithVersion("v1.22.2").
+			Build()).
+		Build()
+
+	// DefaultAndValidateVariables should not panic when oldCluster.Spec.Topology is nil.
+	g.Expect(func() {
+		DefaultAndValidateVariables(ctx, newCluster, oldCluster, clusterClass)
+	}).ToNot(Panic())
+}
+
 func TestClusterDefaultTopologyVersion(t *testing.T) {
 	// NOTE: ClusterTopology feature flag is disabled by default, thus preventing to set Cluster.Topologies.
 	// Enabling the feature flag temporarily for this test.
