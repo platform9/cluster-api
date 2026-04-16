@@ -766,7 +766,7 @@ func DefaultAndValidateVariables(ctx context.Context, cluster, oldCluster *clust
 		oldMDVariables                      map[string][]clusterv1.ClusterVariable
 		oldMPVariables                      map[string][]clusterv1.ClusterVariable
 	)
-	if oldCluster != nil {
+	if oldCluster != nil && oldCluster.Spec.Topology != nil {
 		oldClusterVariables = oldCluster.Spec.Topology.Variables
 		if oldCluster.Spec.Topology.ControlPlane.Variables != nil {
 			oldCPOverrides = oldCluster.Spec.Topology.ControlPlane.Variables.Overrides

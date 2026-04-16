@@ -32,6 +32,7 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/validation/field"
 	utilfeature "k8s.io/component-base/featuregate/testing"
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -1356,6 +1357,51 @@ func TestClusterDefaultAndValidateVariables(t *testing.T) {
 			util.CustomDefaultValidateTest(ctx, cluster, webhook)(t)
 		})
 	}
+}
+
+func TestClusterDefaultAndValidateVariables_OldClusterWithoutTopology(t *testing.T) {
+	// Regression test: adding topology to an existing cluster without topology should not panic.
+	utilfeature.SetFeatureGateDuringTest(t, feature.Gates, feature.ClusterTopology, true)
+
+	g := NewWithT(t)
+
+	clusterClass := builder.ClusterClass(metav1.NamespaceDefault, "class1").
+		WithStatusVariables(clusterv1.ClusterClassStatusVariable{
+			Name: "location",
+			Definitions: []clusterv1.ClusterClassStatusVariableDefinition{
+				{
+					Required: true,
+					From:     clusterv1.VariableDefinitionFromInline,
+					Schema: clusterv1.VariableSchema{
+						OpenAPIV3Schema: clusterv1.JSONSchemaProps{
+							Type:    "string",
+							Default: &apiextensionsv1.JSON{Raw: []byte(`"us-east"`)},
+						},
+					},
+				},
+			},
+		}).
+		Build()
+	conditions.MarkTrue(clusterClass, clusterv1.ClusterClassVariablesReconciledCondition)
+
+	// Old cluster exists but has NO topology (Spec.Topology == nil).
+	oldCluster := builder.Cluster(metav1.NamespaceDefault, "cluster1").Build()
+	g.Expect(oldCluster.Spec.Topology).To(BeNil())
+
+	// New cluster adds topology.
+	newCluster := builder.Cluster(metav1.NamespaceDefault, "cluster1").
+		WithTopology(builder.ClusterTopology().
+			WithClass("class1").
+			WithVersion("v1.22.2").
+			Build()).
+		Build()
+
+	// DefaultAndValidateVariables should not panic when oldCluster.Spec.Topology is nil.
+	var errs field.ErrorList
+	g.Expect(func() {
+		errs = DefaultAndValidateVariables(ctx, newCluster, oldCluster, clusterClass)
+	}).ToNot(Panic())
+	g.Expect(errs).To(BeEmpty())
 }
 
 func TestClusterDefaultTopologyVersion(t *testing.T) {
