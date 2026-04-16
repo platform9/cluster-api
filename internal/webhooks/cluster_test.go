@@ -32,6 +32,7 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/validation/field"
 	utilfeature "k8s.io/component-base/featuregate/testing"
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -1396,9 +1397,11 @@ func TestClusterDefaultAndValidateVariables_OldClusterWithoutTopology(t *testing
 		Build()
 
 	// DefaultAndValidateVariables should not panic when oldCluster.Spec.Topology is nil.
+	var errs field.ErrorList
 	g.Expect(func() {
-		DefaultAndValidateVariables(ctx, newCluster, oldCluster, clusterClass)
+		errs = DefaultAndValidateVariables(ctx, newCluster, oldCluster, clusterClass)
 	}).ToNot(Panic())
+	g.Expect(errs).To(BeEmpty())
 }
 
 func TestClusterDefaultTopologyVersion(t *testing.T) {
